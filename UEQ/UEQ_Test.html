@@ -1,0 +1,51 @@
+<head>
+
+    <script type="module" src=".//node_modules/accessible-ueq/dist/ueq-emotion.webcomponent.mjs"></script>
+</head>
+<body>
+    <label for="fileName" name="label" >User ID:</label>
+    <input type="text" id="fileName" placeholder="User ID" style=" display: flex; flex-direction: column; align-items: center; height: 40; width: 500; margin-bottom: 15em;"/>
+
+    <br>
+
+
+    <form id="form" style="display: flex;  flex-direction: column; align-items: center;">
+        <ueq-emotion id="ueq-sample" name="ueq-1" locale="de_LS"></ueq-emotion>
+        <input type="submit" value="Submit" style="margin-top: 15em; width: 400; height: 50;"/>
+    </form>
+
+    <script>
+       
+            document.getElementById("form").addEventListener("submit", function (event) {
+
+                
+            event.preventDefault(); // Prevents the default form submission behavior
+
+            // Get the text from the textarea
+            const data = document.querySelector('ueq-emotion[name="ueq-1"]').value;
+            var fileName = document.getElementById('fileName').value;
+
+            // Check if a file name is provided
+            if (!fileName) {
+                alert('Please enter a file name before downloading.');
+                return;
+            }
+
+            // Create a Blob containing the text
+            var blob = new Blob([ JSON.stringify(data)], { type: "text/plain" });
+           
+            // Create a link element and set its attributes
+            var a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = "UEQ-S by user: " + fileName + ".txt";
+
+            // Append the link to the body and trigger the click event
+            document.body.appendChild(a);
+            a.click();
+
+            // Remove the link from the body
+            document.body.removeChild(a);
+        });
+        
+    </script>
+</body>
