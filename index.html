@@ -1,51 +1,82 @@
-<head>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UEQ-S Survey</title>
 
-    <script type="module" src=".//node_modules/accessible-ueq/dist/ueq-emotion.webcomponent.mjs"></script>
-</head>
-<body>
-    <label for="fileName" name="label" >User ID:</label>
-    <input type="text" id="fileName" placeholder="User ID" style=" display: flex; flex-direction: column; align-items: center; height: 40; width: 500; margin-bottom: 15em;"/>
+    <!-- Load the Web Component from jsDelivr -->
+    <script
+      type="module"
+      src="https://cdn.jsdelivr.net/npm/accessible-ueq/dist/ueq-emotion.webcomponent.mjs"
+    ></script>
 
-    <br>
+    <style>
+      /* Styling for the survey */
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        margin: 50px;
+      }
+      ueq-emotion {
+        --ueq-face-size: 4em;
+        --ueq-border-highlight: blue;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>UEQ-S Survey</h1>
 
+    <label for="fileName">User ID:</label>
+    <input
+      type="text"
+      id="fileName"
+      placeholder="Enter User ID"
+      style="width: 300px; margin-bottom: 20px"
+    />
 
-    <form id="form" style="display: flex;  flex-direction: column; align-items: center;">
-        <ueq-emotion id="ueq-sample" name="ueq-1" locale="de_LS"></ueq-emotion>
-        <input type="submit" value="Submit" style="margin-top: 15em; width: 400; height: 50;"/>
+    <form id="survey-form">
+      <ueq-emotion
+        id="ueq-component"
+        name="ueq-survey"
+        locale="de_LS"
+      ></ueq-emotion>
+      <br />
+      <input type="submit" value="Submit" style="width: 200px; height: 40px" />
     </form>
 
     <script>
-       
-            document.getElementById("form").addEventListener("submit", function (event) {
+      document
+        .getElementById("survey-form")
+        .addEventListener("submit", function (event) {
+          event.preventDefault(); // Prevent default form submission
 
-                
-            event.preventDefault(); // Prevents the default form submission behavior
+          // Get the UEQ-S survey data
+          const data = document.querySelector(
+            'ueq-emotion[name="ueq-survey"]'
+          ).value;
+          const userId = document.getElementById("fileName").value;
 
-            // Get the text from the textarea
-            const data = document.querySelector('ueq-emotion[name="ueq-1"]').value;
-            var fileName = document.getElementById('fileName').value;
+          // Validate if User ID is provided
+          if (!userId) {
+            alert("Please enter a User ID before downloading.");
+            return;
+          }
 
-            // Check if a file name is provided
-            if (!fileName) {
-                alert('Please enter a file name before downloading.');
-                return;
-            }
+          // Convert the data to JSON and create a file
+          const jsonData = JSON.stringify(data, null, 2);
+          const blob = new Blob([jsonData], { type: "application/json" });
 
-            // Create a Blob containing the text
-            var blob = new Blob([ JSON.stringify(data)], { type: "text/plain" });
-           
-            // Create a link element and set its attributes
-            var a = document.createElement("a");
-            a.href = URL.createObjectURL(blob);
-            a.download = "UEQ-S by user: " + fileName + ".txt";
+          // Create a download link
+          const a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = `UEQ-S_${userId}.json`;
 
-            // Append the link to the body and trigger the click event
-            document.body.appendChild(a);
-            a.click();
-
-            // Remove the link from the body
-            document.body.removeChild(a);
+          // Trigger the download
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
         });
-        
     </script>
-</body>
+  </body>
+</html>
